@@ -6,18 +6,12 @@ animation and several pre-defined layers to lighten the burden of creating custo
 Custom Knight.
 
 # Installation
-
-## Download plugin into Krita
-1. Copy this GitHub page's URL (https://github.com/jngo102/SpriteLoader).
-2. Open Krita.
-2. Open "Tools" in the top menu bar, then open "Scripts", and finally select "Import Python Plugin from Web".
-3. Paste the copied link into the input field, then select "OK".
-
-## Manual installation
 1. Open the following link in a new tab: https://github.com/jngo102/SpriteLoader/releases/download/1.0.0/SpriteLoader.zip, or expand the green "Code" button, then select "Download ZIP".
 2. Once the download has finished, open Krita.
 3. Open "Tools" in the top menu bar, then open "Scripts", and finally select "Import Python Plugin from File".
 4. Navigate to and select the ZIP file that you downloaded.
+5. Click "Yes" to activate the plugin. For future reference, if "Tools > Scripts > Load Sprites" or "Tools > Scripts > Export Sprites" does not appear, check that the plugin is enabled in "Settings > Configure Krita > Python Plugin Manager" (the box next to "Sprite Loader" is checked).
+6. Restart Krita.
 
 # Usage
 
