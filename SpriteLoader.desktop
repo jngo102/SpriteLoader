@@ -5,4 +5,4 @@ X-KDE-Library=SpriteLoader
 X-Python-2-Compatible=false
 X-Krita-Manual=Manual.html
 Name=Sprite Loader
-Comment=Loads sprites dumped by GODump into Krita.
+Comment=Loads animated sprites into Krita.

@@ -15,34 +15,6 @@ class SpriteLoader(Extension):
         self.mainDocument = None
         self.referenceFiles = []
         
-        # Search for location of sprites within mod folder
-        gamePaths = [
-            "Program Files/Steam/steamapps/common",
-            "Program Files (x86)/Steam/steamapps/common",
-            "Program Files/GOG Galaxy/Games",
-            "Program Files (x86)/GOG Galaxy/Games",
-            "Steam/steamapps/common",
-            "GOG Galaxy/Games",
-        ]
-        relPath = os.path.join("Hollow Knight", "hollow_knight_Data", "Managed", "Mods", "GODump", "Sprites")
-        self.spritesPath = ""
-        if sys.platform == "win32":
-            for staticPath in gamePaths:
-                for drive in [f"{driveLetter}:/" for driveLetter in string.ascii_uppercase if os.path.exists(f"{driveLetter}:")]:
-                    print(f"Checking path: {os.path.join(drive, staticPath, relPath)}")
-                    if os.path.exists(os.path.join(drive, staticPath, relPath)):
-                        self.spritesPath = os.path.join(drive, staticPath, relPath)
-                        print(f"Detected sprites path at: {self.spritesPath}")
-                        break
-        else:
-            for staticPath in gamePaths:
-                if os.path.exists(os.path.expanduser("~"), staticPath, relPath):
-                    self.spritesPath = os.path.join(os.path.expanduser("~"), staticPath, relPath)
-                    print(f"Detected sprites path at: {self.spritesPath}")
-                    break
-        if self.spritesPath == "":
-            print("No sprites path detected!")
-
     # Must be overriden for the plugin to work.
     def setup(self):
         pass
@@ -57,10 +29,9 @@ class SpriteLoader(Extension):
     # Load sprites from an animation folder into a Krita file.
     def loadSprites(self):
         self.referenceFiles.clear()
+
         if self.spritesPath == "":
-            warning = QMessageBox(QMessageBox.Icon(), "Error!", "You have not dumped any sprites from GODump yet!")
-            warning.show()
-            warning.exec()
+            
             return
         animationDirectory = QFileDialog.getExistingDirectory(
             None,
@@ -68,8 +39,20 @@ class SpriteLoader(Extension):
             self.spritesPath,
             QFileDialog.ShowDirsOnly,
         )
-        if animationDirectory == "":
-            return
+
+        while animationDirectory == "":
+            warning = QMessageBox(QMessageBox.Icon(),
+                                  "Error!", "This is an invalid path for an animation.")
+            warning.show()
+            warning.exec()
+
+            animationDirectory = QFileDialog.getExistingDirectory(
+                None,
+                "Select folder containing Sprite .pngs",
+                self.spritesPath,
+                QFileDialog.ShowDirsOnly,
+            )
+
         animationName = animationDirectory.split("/")[-1].split(".")[-1]
         self.mainDocument = Krita.instance().createDocument(2, 2, animationName, "RGBA", "U8", "", 120.0)
         root = self.mainDocument.rootNode()
@@ -97,10 +80,13 @@ class SpriteLoader(Extension):
         inkLayer = self.mainDocument.createNode("Ink", "paintLayer")
         baseLayer = self.mainDocument.createNode("Base", "paintLayer")
         shadeLayer = self.mainDocument.createNode("Shade", "paintLayer")
+        lightLayer = self.mainDocument.createNode("Light", "paintLayer")
         shadeLayer.setAlphaLocked(True)
+        lightLayer.setAlphaLocked(True)
         root.addChildNode(finalLayer, None)
         finalLayer.addChildNode(baseLayer, None)
         finalLayer.addChildNode(shadeLayer, baseLayer)
+        finalLayer.addChildNode(lightLayer, baseLayer)
         finalLayer.addChildNode(inkLayer, shadeLayer)
         root.addChildNode(sketchGroupLayer, finalLayer)
         sketchGroupLayer.addChildNode(sketchPaintLayer, None)
@@ -111,11 +97,6 @@ class SpriteLoader(Extension):
 
     # Export all edited frames from the loaded animation back into the selected animation's folder.
     def exportSprites(self):
-        if self.spritesPath == "":
-            warning = QMessageBox(QMessageBox.Icon(), "Error!", "You have not dumped any sprites from GODump yet!")
-            warning.show()
-            warning.exec()
-            return
         if len(self.referenceFiles) <= 0:
             warning = QMessageBox(QMessageBox.Icon(), "Error!", "An animation has not been loaded yet! Please select an animation folder using \"Load Sprites\".")
             warning.show()
