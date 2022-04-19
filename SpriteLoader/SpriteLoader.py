@@ -29,14 +29,10 @@ class SpriteLoader(Extension):
     # Load sprites from an animation folder into a Krita file.
     def loadSprites(self):
         self.referenceFiles.clear()
-
-        if self.spritesPath == "":
-            
-            return
         animationDirectory = QFileDialog.getExistingDirectory(
             None,
             "Select folder containing Sprite .pngs",
-            self.spritesPath,
+            "",
             QFileDialog.ShowDirsOnly,
         )
 
@@ -47,9 +43,9 @@ class SpriteLoader(Extension):
             warning.exec()
 
             animationDirectory = QFileDialog.getExistingDirectory(
-                None,
+                None,   
                 "Select folder containing Sprite .pngs",
-                self.spritesPath,
+                "",
                 QFileDialog.ShowDirsOnly,
             )
 
